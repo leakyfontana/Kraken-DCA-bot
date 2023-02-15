@@ -1,32 +1,24 @@
 from classes.kraken import KrakenClient
 from classes.asset import Asset
 from helpers.getNonce import getNonce
-
-def setAssets():
-    client = KrakenClient()
-
-    balances = client._post('/0/private/Balance', getNonce())
-
-    print(balances)
-
-    asset_query = "?asset="
-    for idx, asset in enumerate(balances):
-        if (idx != 0):
-            asset_query += ','
-
-        asset_query += asset
-
-    uri_path = '/0/public/Assets' + asset_query
-    asset_response = client._get(uri_path, getNonce())
-
-    assets = {}
-    for asset in asset_response:
-        temp_asset = Asset(asset_response[asset])
-        assets[temp_asset.altname] = temp_asset
-    
-    return assets
-
+from helpers.getBalances import getBalances
+from helpers.getAssets import getAssets
+from helpers.setAssets import setAssets
+from helpers.getOrder import getOrder
+from logic.calcOrderSize import calcOrderSize
 
 if __name__ == "__main__":
 
-    print(setAssets())
+    client = KrakenClient()
+
+    balances = getBalances(client, getNonce())
+
+    # kraken_assets = getAssets(client, getNonce(), balances)
+
+    # assets = setAssets(kraken_assets)
+
+    # for asset in assets:
+    #     print(asset.__str__())
+
+    # print(balances)
+    print(calcOrderSize(client, getNonce(), 'ETH', 'USD', .50));
