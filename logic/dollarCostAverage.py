@@ -3,6 +3,7 @@ from helpers.getBalances import getBalances
 from .calcPurchaseDistribution import calcPurchaseDistribution
 from .calcOrderSize import calcOrderSize
 from helpers.getNonce import getNonce
+import time
 
 def dollarCostAverage(client, nonce):
     balances = getBalances(client, nonce)
@@ -25,13 +26,13 @@ def dollarCostAverage(client, nonce):
         print(key + sellTicker)
 
         assetPairInfo = client._get ('/0/public/AssetPairs?pair=' + key + sellTicker, getNonce())
-        assetPairMin = assetPairInfo[key + sellTicker]['ordermin']
+        assetPairMin = float(assetPairInfo[key + sellTicker]['ordermin'])
 
         if  assetPairMin > orderSize:
             raise Exception(f'Less than Order Min for {key + sellTicker}: Please increase {key} distribution % or {sellTicker} amount')
 
         response = client._post('/0/private/AddOrder', {
-            "nonce": getNonce(),
+            "nonce": str(int(1000*time.time())),
             "ordertype": "market",
             "type": "buy",
             "volume": float(orderSize),
